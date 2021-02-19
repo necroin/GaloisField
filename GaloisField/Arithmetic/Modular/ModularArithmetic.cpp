@@ -1,7 +1,7 @@
 #include "ModularArithmetic.h"
 
 Int fast_power(Int base, Int power, Int mod) {
-    long long result = 1;
+    Int result = 1;
     while (power > 0) {
 
         if ((power & 1) == 1) {

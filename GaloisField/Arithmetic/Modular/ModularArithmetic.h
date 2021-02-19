@@ -2,7 +2,6 @@
 #ifndef _MODULARARITHMETIC_H_
 #define _MODULARARITHMETIC_H_
 #include <exception>
-#include <array>
 using Int = long long int;
 
 Int fast_power(Int base, Int power, Int mod);
