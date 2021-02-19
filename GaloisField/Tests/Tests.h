@@ -4,9 +4,20 @@
 #include "../Field/GaloisField.h"
 #include <fstream>
 #include <string>
+#include <memory>
 namespace Tests {
+
+	class AbstractTest {
+	protected:
+		inline static Int _global_order_number = 1;
+	public:
+		virtual ~AbstractTest() = default;
+		virtual void full_console_print() = 0;
+		virtual void brief_console_print() = 0;
+	};
+
 	template <class _Left, class _Right, class _Operation, class _Result>
-	class Test {
+	class Test : public AbstractTest {
 	private:
 		bool _is_successful;
 		_Left _left;
@@ -16,7 +27,6 @@ namespace Tests {
 		_Result _potential_result;
 		_Result _real_result;
 		Int _order_number;
-		inline static Int _global_order_number = 1;
 	public:
 		Test(_Left left, _Right right, _Operation operation, _Result potential_result, std::string operation_name = "") :
 			_left(left),
@@ -55,10 +65,10 @@ namespace Tests {
 	public:
 		bool is_successful() const noexcept { return _is_successful; }
 
-		void full_console_print() {
+		virtual void full_console_print() override {
 			full_print(std::cout);
 		}
-		void brief_console_print() {
+		virtual void brief_console_print() override {
 			brief_print(std::cout);
 		}
 	};
@@ -67,13 +77,6 @@ namespace Tests {
 	Test(_Left, _Right, _Operation, _Result)->Test<_Left, _Right, _Operation, _Result>;
 
 #define SIMPLE_GFELEMENTS_OPERATION(OPERATOR) [](const GFElement& left, const GFElement& right) { return left OPERATOR right; }
-
-	void run_tests() {
-		GaloisField field(2, 3, { 1,1,0,1 });
-		decltype(auto) field_elements = field.all_field_elements();
-		auto test1 = Test(field_elements[5], field_elements[7], SIMPLE_GFELEMENTS_OPERATION(*), field_elements[6], "a * b");
-		test1.full_console_print();
-		test1.brief_console_print();
-	}
+#define TEST(LEFT, RIGHT, OPERATION, RESULT, NAME) tests.emplace_back(std::unique_ptr<AbstractTest>(new Test(LEFT, RIGHT, OPERATION, RESULT, NAME)));
 };
 #endif
