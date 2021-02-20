@@ -16,6 +16,33 @@ GFElement::GFElement(const GFElement& left, const GFElement& right, decltype(pol
 	_coefficients(polynomial_operator(left._coefficients, right._coefficients, left._field.characteristic()))
 {}
 
+GFElement& GFElement::operator=(const GFElement& other)
+{
+	if (this == &other) return *this;
+	_field = other._field;
+	_coefficients = other._coefficients;
+	return *this;
+}
+
+GFElement& GFElement::operator=(GFElement&& other) noexcept
+{
+	if (this == &other) return *this;
+	_field = other._field;
+	_coefficients = std::move(other._coefficients);
+	return *this;
+}
+
+Int GFElement::to_int() const
+{
+	Int result = 0;
+	Int two_powers = 1;
+	for (size_t i = 0; i < _coefficients.size(); ++i) {
+		result += (_coefficients[i] * two_powers);
+		two_powers *= 2;
+	}
+	return result;
+}
+
 void GFElement::field_assert(const GFElement& other) const
 {
 	if (_field != other._field) throw std::exception("the fields are not compatible");
@@ -62,15 +89,38 @@ bool GFElement::operator!=(const GFElement& other) const noexcept
 	return !(*this == other);
 }
 
+GFElement GFElement::operator+(const Number& other) const
+{
+	CoefficientsVector new_coefficients(_coefficients);
+	Int carry = 0;
+	for (size_t i = 0; i < new_coefficients.size(); ++i) {
+		auto sum = new_coefficients[i] + other._coefficients[i] + carry;
+		new_coefficients[i] = sum % _field.characteristic();
+		carry = sum / _field.characteristic();
+	}
+	return GFElement(std::move(new_coefficients), _field);
+}
+
+GFElement::GFElement(const GFElement& other) :
+	_coefficients(other._coefficients),
+	_field(other._field)
+{}
+
+GFElement::GFElement(GFElement&& other) noexcept :
+	_coefficients(std::move(other._coefficients)),
+	_field(other._field)
+{}
+
 std::ostream& operator<<(std::ostream& out, const GFElement& element)
 {
 	decltype(auto) coefficients = element._coefficients;
 	decltype(auto) coefficients_it = coefficients.begin();
-	out << "[";
+	out << "(";
 	out << *coefficients_it++;
 	for (; coefficients_it != coefficients.end(); ++coefficients_it) {
 		out << "," << *coefficients_it;
 	}
-	out << "]";
+	out << ")";
+	out << "[" << element.to_int() << "]";
 	return out;
 }

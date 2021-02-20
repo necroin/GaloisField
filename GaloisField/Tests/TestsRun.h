@@ -1,14 +1,16 @@
 #pragma once
 #ifndef _TESTSRUN_H_
 #define _TESTSRUN_H_
+#include "Field_2_2_tests.h"
 #include "Field_2_3_tests.h"
 namespace Tests {
 
-	void run_tests() {
-		decltype(auto) tests = test_field_2_3();
+	template<class _TestFunction>
+	void run_tests(_TestFunction test_function) {
+		decltype(auto) tests = test_function();
 
 		for (auto&& test : tests) {
-			test->brief_console_print();
+			test->console_print();
 		}
 	}
 }

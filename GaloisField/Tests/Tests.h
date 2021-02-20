@@ -12,8 +12,7 @@ namespace Tests {
 		inline static Int _global_order_number = 1;
 	public:
 		virtual ~AbstractTest() = default;
-		virtual void full_console_print() = 0;
-		virtual void brief_console_print() = 0;
+		virtual void console_print() = 0;
 	};
 
 	template <class _Left, class _Right, class _Operation, class _Result>
@@ -41,35 +40,28 @@ namespace Tests {
 			++_global_order_number;
 		}
 	private:
-		void brief_print(std::ostream& out) {
-			out << "Test " << _order_number;
-			if (_is_successful)
-				out << " is successful" << std::endl;
-			else
-				out << " was failed" << std::endl;
-			out << std::endl;
-		}
-		void full_print(std::ostream& out) {
-			out << "Test " << _order_number << std::endl;
-			out << "       Operation : " << _operation_name << std::endl;
-			out << "    Left operand : " << _left << std::endl;
-			out << "   Right operand : " << _right << std::endl;
-			out << "     Real result : " << _real_result << std::endl;
-			out << "Potential result : " << _potential_result << std::endl;
-			if (_is_successful)
-				out << "Test successful" << std::endl;
-			else
-				out << "Test failed" << std::endl;
-			out << std::endl;
+		void print(std::ostream& out) {
+			if (_is_successful) {
+				out << "Test " << _order_number << ": "
+					<< _left << "  " << _operation_name << "  " << _right << " = " << _real_result 
+					<< "  Successful" << std::endl;
+			}
+			else {
+				out << std::endl;
+				out << "Test " << _order_number << " failed"<< std::endl;
+				out << "       Operation : " << _operation_name << std::endl;
+				out << "    Left operand : " << _left << std::endl;
+				out << "   Right operand : " << _right << std::endl;
+				out << "     Real result : " << _real_result << std::endl;
+				out << "Potential result : " << _potential_result << std::endl;
+				out << std::endl;
+			}
 		}
 	public:
 		bool is_successful() const noexcept { return _is_successful; }
 
-		virtual void full_console_print() override {
-			full_print(std::cout);
-		}
-		virtual void brief_console_print() override {
-			brief_print(std::cout);
+		virtual void console_print() override {
+			print(std::cout);
 		}
 	};
 

@@ -4,6 +4,8 @@
 #include "../../Arithmetic/Modular/ModularArithmetic.h"
 #include "../../Arithmetic/Polynomial/PolynomialArithmetic.h"
 #include <iostream>
+#include "../../Arithmetic/Number/Number.h"
+
 class GaloisField;
 
 class GFElement {
@@ -21,17 +23,21 @@ public:
 	bool operator == (const GFElement& other) const noexcept;
 	bool operator != (const GFElement& other) const noexcept;
 public:
+	GFElement operator+(const Number& other) const;
+public:
 	GFElement() = delete;
-	GFElement(const GFElement&) = default;
-	GFElement(GFElement&&) = default;
+	GFElement(const GFElement& other);
+	GFElement(GFElement&& other) noexcept;
 
 	GFElement(const CoefficientsVector& coefficients, GaloisField& field);
 	GFElement(CoefficientsVector&& coefficients, GaloisField& field);
 	GFElement(const GFElement& left, const GFElement& right, decltype(polynomial_add) polynomial_operator);
 
-	GFElement& operator=(const GFElement&) = default;
-	GFElement& operator=(GFElement&&) = default;
+	GFElement& operator=(const GFElement& other);
+	GFElement& operator=(GFElement&& other) noexcept;
 public:
 	friend std::ostream& operator << (std::ostream& out, const GFElement& element);
+public:
+	Int to_int() const;
 };
 #endif
