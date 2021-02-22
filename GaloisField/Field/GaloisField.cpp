@@ -6,6 +6,12 @@ GaloisField::GaloisField(Int characteristic, Int dimension, CoefficientsVector r
 	_reduction_polynomial(reduction_polynomial)
 {}
 
+GaloisField::GaloisField(Int characteristic, Int dimension) : 
+	_characteristic(characteristic),
+	_dimension(dimension)
+{
+}
+
 Int GaloisField::characteristic() const noexcept
 {
 	return _characteristic;

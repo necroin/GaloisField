@@ -11,12 +11,7 @@ private:
 	std::vector<Number> _C;
 	std::vector<GFElement> _Q;
 public:
-	Generator(GaloisField& field, Int N, const std::vector<GFElement> A, const std::vector<Number> C) :
-		_field(field),
-		_A(A),
-		_C(C),
-		_Q(N, GFElement(CoefficientsVector(field.dimension(),0),field))
-	{}
+	Generator(GaloisField& field, Int N, const std::vector<GFElement> A, const std::vector<Number> C);
 
 	void generate() {
 		std::vector<GFElement> new_Q;

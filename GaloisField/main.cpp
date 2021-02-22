@@ -3,10 +3,12 @@
 #include "Tests/TestsRun.h"
 #include "Generator/Generator.h"
 
-int main() {
-	Tests::run_tests(Tests::test_field_2_2);
 
-	auto field = GaloisField(2, 2, { 1,1,1 });
+
+
+
+int main() {
+	/*auto field = GaloisField(2, 2, { 1,1,1 });
 
 	Int N = 3;
 
@@ -22,13 +24,25 @@ int main() {
 		Number({ 1,0 })
 	};
 
-	auto generator = Generator(field, N, A, C);
+	auto generator = Generator(field, N, A, C);*/
 
-	generator.print_state();
-	for (size_t i = 0; i <= 10; ++i) {
-		generator.generate();
-		generator.print_state();
+	///*generator.print_state();
+	//for (size_t i = 0; i <= 10; ++i) {
+	//	generator.generate();
+	//	generator.print_state();
+	//}*/
+	
+	decltype(auto) primitives = prim_poly::find_prim(7);
+	for (auto&& primitive : primitives) {
+		decltype(auto) primitive_it = primitive.begin();
+		std::cout << "(";
+		std::cout << *primitive_it++;
+		for (; primitive_it != primitive.end(); ++primitive_it) {
+			std::cout << "," << *primitive_it;
+		}
+		std::cout << ")" << std::endl;
 	}
+
 	system("pause");
 	return 0;
 }

@@ -81,3 +81,77 @@ CoefficientsVector polinomial_inv(const CoefficientsVector& polynomial_coefficie
 {
 	return CoefficientsVector();
 }
+
+namespace prim_poly {
+	namespace detail {
+		CoefficientsVector to_binary(Int number, Int size, const CoefficientsVector& begin_value)
+		{
+			CoefficientsVector result = begin_value;
+			Int extractor = 1;
+			for (Int i = 0; i < size; ++i) {
+				result.push_back((number & extractor) > 0);
+				extractor <<= 1;
+			}
+			return result;
+		}
+	}
+
+	PolynomialsList poly_gen(Int degree)
+	{
+		PolynomialsList polynomials;
+		for (int i = 1; i < pow(2, (degree - 1)) + 1; ++i) {
+			auto poly = detail::to_binary(i, degree - 1, { 1 });
+			Int checksum = 0;
+			for (size_t i = 1; i < poly.size(); ++i) {
+				checksum += poly[i];
+			}
+			if (checksum % 2 == 1) {
+				poly.push_back(1);
+				polynomials.push_back(poly);
+			}
+		}
+		return polynomials;
+	}
+
+	bool check_irr(const CoefficientsVector& polynomial)
+	{
+		decltype(auto) polynomial_deg = polynomial_degree(polynomial);
+		for (Int i = 2; i < pow(2, polynomial_deg) + 1; ++i) {
+			decltype(auto) j = detail::to_binary(i, polynomial.size());
+			decltype(auto) R = polynomial_div(polynomial, j, 2).second;
+			if (polynomial_degree(R) == -1) return false;
+		}
+		return true;
+	}
+
+	bool check_div(const CoefficientsVector& left, const CoefficientsVector& right)
+	{
+		if (polynomial_degree(left) == polynomial_degree(right)) return false;
+		decltype(auto) R = polynomial_div(left, right, 2).second;
+		if (polynomial_degree(R) == -1) return true;
+		return false;
+	}
+
+	Int poly_order(const CoefficientsVector& polynomial)
+	{
+		for (Int T = polynomial.size() - 1; T < pow(2, polynomial.size() - 1);++T) {
+			decltype(auto) poly = detail::to_binary(pow(2, T) + 1, T + 1);
+			if (check_div(poly, polynomial)) return T;
+		}
+		return -1;
+	}
+
+	PolynomialsList find_prim(Int degree)
+	{
+		decltype(auto) canditates = poly_gen(degree);
+		PolynomialsList primitives;
+		for (auto&& polynomial : canditates) {
+			if (check_irr(polynomial) && (poly_order(polynomial) == (pow(2, degree) - 1))) {
+				primitives.push_back(polynomial);
+			}
+		}
+		return primitives;
+	}
+
+	
+}

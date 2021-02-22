@@ -20,6 +20,8 @@ public:
 	GFElement operator*(const GFElement& other) const;
 	GFElement operator/(const GFElement& other) const;
 
+	GFElement operator^(const Int degree) const;
+
 	bool operator == (const GFElement& other) const noexcept;
 	bool operator != (const GFElement& other) const noexcept;
 public:

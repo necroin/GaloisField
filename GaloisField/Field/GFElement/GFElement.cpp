@@ -75,6 +75,15 @@ GFElement GFElement::operator/(const GFElement& other) const
 	return (*this) * GFElement(polinomial_inv(other._coefficients, other._field.characteristic()), _field);
 }
 
+GFElement GFElement::operator^(const Int degree) const
+{
+	GFElement result(*this);
+	for (Int i = 0; i < degree - 1; ++i) {
+		result = result * *this;
+	}
+	return result;
+}
+
 bool GFElement::operator==(const GFElement& other) const noexcept
 {
 	field_assert(other);
