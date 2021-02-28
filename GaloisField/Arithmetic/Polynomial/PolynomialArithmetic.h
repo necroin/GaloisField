@@ -22,6 +22,15 @@ namespace prim_poly {
 
 	namespace detail {
 		CoefficientsVector to_binary(Int number, Int size, const CoefficientsVector& begin_value = CoefficientsVector());
+
+		CoefficientsVector power2(Int degree, Int size);
+
+		CoefficientsVector binary_xor(const CoefficientsVector& left, const CoefficientsVector& right);
+		std::pair<CoefficientsVector, CoefficientsVector> div_alg(const CoefficientsVector& left, const CoefficientsVector& right);
+
+		namespace debug {
+			void plynomial_print(const CoefficientsVector& polynomial_coefficients);
+		}
 	};
 
 

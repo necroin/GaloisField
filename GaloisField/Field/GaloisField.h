@@ -10,7 +10,6 @@ private:
 	CoefficientsVector _reduction_polynomial;
 public:
 	GaloisField(Int characteristic, Int dimension, CoefficientsVector reduction_polynomial);
-	GaloisField(Int characteristic, Int dimension);
 public:
 	Int characteristic() const noexcept;
 	Int dimension() const noexcept;

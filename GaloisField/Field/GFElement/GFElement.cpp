@@ -98,6 +98,36 @@ bool GFElement::operator!=(const GFElement& other) const noexcept
 	return !(*this == other);
 }
 
+bool GFElement::operator<(const GFElement& other) const noexcept
+{
+	field_assert(other);
+	for (Int i = _coefficients.size() - 1; i >= 0; --i) {
+		if (_coefficients[i] < other._coefficients[i]) return true;
+		if (_coefficients[i] > other._coefficients[i]) return false;
+	}
+	return false;
+}
+
+bool GFElement::operator>(const GFElement& other) const noexcept
+{
+	field_assert(other);
+	for (size_t i = _coefficients.size() - 1; i > 0; --i) {
+		if (_coefficients[i] > other._coefficients[i]) return true;
+		if (_coefficients[i] < other._coefficients[i]) return false;
+	}
+	return false;
+}
+
+bool GFElement::operator<=(const GFElement& other) const noexcept
+{
+	return !(*this > other);
+}
+
+bool GFElement::operator>=(const GFElement& other) const noexcept
+{
+	return !(*this < other);
+}
+
 GFElement GFElement::operator+(const Number& other) const
 {
 	CoefficientsVector new_coefficients(_coefficients);

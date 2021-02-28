@@ -24,6 +24,11 @@ public:
 
 	bool operator == (const GFElement& other) const noexcept;
 	bool operator != (const GFElement& other) const noexcept;
+	bool operator <  (const GFElement& other) const noexcept;
+	bool operator >  (const GFElement& other) const noexcept;
+	bool operator <= (const GFElement& other) const noexcept;
+	bool operator >= (const GFElement& other) const noexcept;
+
 public:
 	GFElement operator+(const Number& other) const;
 public:

@@ -15,4 +15,13 @@ public:
 public:
 	GFElement operator+(const GFElement& element);
 };
+
+
+class BinaryNumber {
+private:
+	CoefficientsVector _coefficients;
+public:
+	bool operator <(const BinaryNumber& other);
+	BinaryNumber& operator++();
+};
 #endif

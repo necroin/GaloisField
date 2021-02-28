@@ -2,7 +2,7 @@
 #ifndef _GENERATOR_H_
 #define _GENERATOR_H_
 #include "../Field/GaloisField.h"
-
+#include <set>
 
 class Generator {
 private:
@@ -10,23 +10,17 @@ private:
 	std::vector<GFElement> _A;
 	std::vector<Number> _C;
 	std::vector<GFElement> _Q;
+	std::vector<GFElement> _start_Q;
+	Int _N;
+private:
+	void reset_Q();
 public:
-	Generator(GaloisField& field, Int N, const std::vector<GFElement> A, const std::vector<Number> C);
-
-	void generate() {
-		std::vector<GFElement> new_Q;
-		new_Q.emplace_back(_A[0] * _Q[_Q.size() - 1] + _C[0]);
-		for (size_t i = 1; i < _Q.size(); ++i) {
-			new_Q.emplace_back(_A[i] * _Q[_Q.size() - 1] + _Q[i - 1] + _C[i]);
-		}
-		_Q = std::move(new_Q);
-	}
-
-	void print_state() {
-		for (auto&& q : _Q) {
-			std::cout << q.to_int() << " ";
-		}
-		std::cout << std::endl;
-	}
+	Generator(GaloisField& field, Int N, std::vector<GFElement> A, std::vector<Number> C, std::vector<GFElement> star_Q = std::vector<GFElement>());
+public:
+	std::vector<GFElement> generate();
+	void print_state(std::ostream& out = std::cout);
+	void print_all_current_cycle_states(std::ostream& out = std::cout);
+	std::vector<std::vector<std::vector<GFElement>>> generate_all_cycles();
+	void print_all_cycles(std::ostream& out = std::cout);
 };
 #endif

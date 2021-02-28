@@ -1,4 +1,5 @@
 #include "PolynomialArithmetic.h"
+#include <iostream>
 
 CoefficientsVector polynomial_add(const CoefficientsVector& left, const CoefficientsVector& right, const Int mod)
 {
@@ -94,12 +95,69 @@ namespace prim_poly {
 			}
 			return result;
 		}
+
+		Int from_binary(const CoefficientsVector& coefs) {
+			Int result = 0;
+			Int power2 = 1;
+			for (auto coef : coefs) {
+				result += coef * power2;
+				power2 *= 2;
+			}
+			return result;
+		}
+
+		CoefficientsVector power2(Int degree, Int size)
+		{
+			CoefficientsVector res(size, 0);
+			res[degree] = 1;
+			return res;
+		}
+
+		CoefficientsVector binary_xor(const CoefficientsVector& left, const CoefficientsVector& right)
+		{
+			auto left_size = left.size();
+			auto right_size = right.size();
+			CoefficientsVector res;
+			if (left_size < right_size) {
+				res = right;
+				for (size_t i = 0; i < left_size; ++i) {
+					res[i] ^= left[i];
+				}
+			}
+			else {
+				res = left;
+				for (size_t i = 0; i < right_size; ++i) {
+					res[i] ^= right[i];
+				}
+			}
+			return res;
+		}
+
+		std::pair<CoefficientsVector, CoefficientsVector> div_alg(const CoefficientsVector& left, const CoefficientsVector& right)
+		{
+			auto diff = polynomial_degree(left) - polynomial_degree(right);
+			if (diff < 0) {
+				return { CoefficientsVector{0} , left };
+			}
+			CoefficientsVector a(diff, 0);
+			auto q = power2(diff, left.size());
+
+			auto m = a;
+			m.reserve(m.size() + right.size());
+			m.insert(m.end(), right.begin(), right.end());
+
+			
+			auto r = binary_xor(m, left);
+
+			auto [new_Q, new_R] = div_alg(r, right);
+			return { binary_xor(new_Q, q),new_R };
+		}
 	}
 
 	PolynomialsList poly_gen(Int degree)
 	{
 		PolynomialsList polynomials;
-		for (int i = 1; i < pow(2, (degree - 1)) + 1; ++i) {
+		for (int i = 1; i < pow(2, (degree - 1)) + 1; ++i) { // int64_t
 			auto poly = detail::to_binary(i, degree - 1, { 1 });
 			Int checksum = 0;
 			for (size_t i = 1; i < poly.size(); ++i) {
@@ -116,9 +174,9 @@ namespace prim_poly {
 	bool check_irr(const CoefficientsVector& polynomial)
 	{
 		decltype(auto) polynomial_deg = polynomial_degree(polynomial);
-		for (Int i = 2; i < pow(2, polynomial_deg) + 1; ++i) {
+		for (Int i = 2; i < pow(2, polynomial_deg) + 1; ++i) { // int64_t
 			decltype(auto) j = detail::to_binary(i, polynomial.size());
-			decltype(auto) R = polynomial_div(polynomial, j, 2).second;
+			decltype(auto) R = detail::div_alg(polynomial, j).second;
 			if (polynomial_degree(R) == -1) return false;
 		}
 		return true;
@@ -127,15 +185,18 @@ namespace prim_poly {
 	bool check_div(const CoefficientsVector& left, const CoefficientsVector& right)
 	{
 		if (polynomial_degree(left) == polynomial_degree(right)) return false;
-		decltype(auto) R = polynomial_div(left, right, 2).second;
-		if (polynomial_degree(R) == -1) return true;
+		decltype(auto) R = detail::div_alg(left, right).second;
+		if (detail::from_binary(R) == 0) return true;
 		return false;
 	}
 
 	Int poly_order(const CoefficientsVector& polynomial)
 	{
-		for (Int T = polynomial.size() - 1; T < pow(2, polynomial.size() - 1);++T) {
-			decltype(auto) poly = detail::to_binary(pow(2, T) + 1, T + 1);
+		auto max_T = pow(2, polynomial.size() - 1); // int64_t
+		for (Int T = polynomial.size() - 1; T < max_T; ++T) {
+			decltype(auto) poly = detail::power2(T, T + 1);
+			poly[T] = 1;
+			poly[0] = 1;
 			if (check_div(poly, polynomial)) return T;
 		}
 		return -1;
@@ -146,12 +207,27 @@ namespace prim_poly {
 		decltype(auto) canditates = poly_gen(degree);
 		PolynomialsList primitives;
 		for (auto&& polynomial : canditates) {
-			if (check_irr(polynomial) && (poly_order(polynomial) == (pow(2, degree) - 1))) {
-				primitives.push_back(polynomial);
+			if (check_irr(polynomial)){
+				auto _poly_order = poly_order(polynomial);
+				auto power = static_cast<Int>(pow(2, degree) - 1); // int64_t
+				if (_poly_order == power) {
+					primitives.push_back(polynomial);
+				}
 			}
 		}
 		return primitives;
 	}
 
 	
+}
+
+void prim_poly::detail::debug::plynomial_print(const CoefficientsVector& polynomial_coefficients)
+{
+	decltype(auto) coefficients_it = polynomial_coefficients.begin();
+	std::cout << "(";
+	std::cout << *coefficients_it++;
+	for (; coefficients_it != polynomial_coefficients.end(); ++coefficients_it) {
+		std::cout << "," << *coefficients_it;
+	}
+	std::cout << ")" << std::endl;
 }

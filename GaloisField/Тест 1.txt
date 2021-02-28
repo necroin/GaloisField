@@ -1,0 +1,40 @@
+Cycle -> 1
+States count -> 1
+0 0 
+
+Cycle -> 2
+States count -> 3
+0 1 
+2 3 
+1 0 
+
+Cycle -> 3
+States count -> 3
+0 2 
+3 1 
+2 0 
+
+Cycle -> 4
+States count -> 3
+0 3 
+1 2 
+3 0 
+
+Cycle -> 5
+States count -> 3
+1 1 
+2 2 
+3 3 
+
+Cycle -> 6
+States count -> 1
+1 3 
+
+Cycle -> 7
+States count -> 1
+2 1 
+
+Cycle -> 8
+States count -> 1
+3 2 
+
